@@ -69,6 +69,7 @@ whisperwire/
    ```
    MONGODB_URI=mongodb://localhost:27017/whisperwire
    PORT=5001
+   
    ```
 
 ### Running the Application
