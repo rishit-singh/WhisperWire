@@ -1,0 +1,18 @@
+{
+  "name": "whisperwire",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start:frontend": "cd whisperwire-frontend && npm start",
+    "start:backend": "cd whisperwire-backend && PORT=5002 npm run dev",
+    "start": "cd whisperwire-backend && npm start",
+    "build": "cd whisperwire-frontend && npm run deploy",
+    "install:frontend": "cd whisperwire-frontend && npm install",
+    "install:backend": "cd whisperwire-backend && npm install",
+    "postinstall": "npm run install:backend && npm run install:frontend"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=7.0.0"
+  }
+} 

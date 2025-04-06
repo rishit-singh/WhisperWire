@@ -57,42 +57,54 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: var(--spacing-sm);
-  padding-top: var(--spacing-sm);
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--bg-secondary);
+}
+
+.reply-button, .delete-button {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .reply-button {
-  background-color: transparent;
-  color: var(--whisper-color);
-  border: 1px solid var(--whisper-color);
-  border-radius: var(--border-radius-full);
-  padding: var(--spacing-xxs) var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
+  background-color: var(--whisper-color);
+  color: white;
 }
 
 .reply-button:hover {
-  background-color: var(--whisper-color);
-  color: white;
-  transform: translateY(-2px);
+  background-color: var(--whisper-color-dark, var(--primary-dark));
 }
 
 .reply-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  border-color: #ccc;
-  color: #999;
-  background-color: #f5f5f5;
-  transform: none;
+}
+
+.delete-button {
+  background-color: var(--danger-color, #e74c3c);
+  color: white;
+  margin-left: 10px;
+}
+
+.delete-button:hover {
+  background-color: var(--danger-dark, #c0392b);
+}
+
+.whisper-deleting {
+  opacity: 0.5;
+  pointer-events: none;
+  transform: scale(0.95);
+  transition: all 0.3s ease;
 }
 
 .reply-count {
-  font-size: var(--font-size-xs);
-  color: var(--dark-color);
-  opacity: 0.7;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
 }
 
 /* Reply specific styles */

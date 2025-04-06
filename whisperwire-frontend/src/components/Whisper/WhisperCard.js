@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import './WhisperCard.css';
 import ReplyForm from './ReplyForm';
 
-const WhisperCard = ({ whisper, onReply, isReply, parentWhisper }) => {
+const WhisperCard = ({ whisper, onReply, onDelete, isReply, parentWhisper }) => {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [hasReplied, setHasReplied] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -21,6 +22,13 @@ const WhisperCard = ({ whisper, onReply, isReply, parentWhisper }) => {
     onReply(whisper._id, text, vibeTags);
     setHasReplied(true);
     setShowReplyForm(false);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this whisper?')) {
+      setIsDeleting(true);
+      onDelete(whisper._id);
+    }
   };
   
   // Get random vibe color from one of the vibes or use a default
@@ -43,6 +51,15 @@ const WhisperCard = ({ whisper, onReply, isReply, parentWhisper }) => {
     return vibeColorMap[vibeTag] || 'var(--primary-color)';
   };
   
+  // If whisper is being deleted, show a faded version
+  if (isDeleting) {
+    return (
+      <div className="whisper-card whisper-deleting">
+        <p>Deleting whisper...</p>
+      </div>
+    );
+  }
+  
   return (
     <div 
       className={`whisper-card ${isReply ? 'whisper-reply' : ''}`}
@@ -64,8 +81,8 @@ const WhisperCard = ({ whisper, onReply, isReply, parentWhisper }) => {
           <div className="whisper-time">{formatDate(whisper.timestamp)}</div>
           {whisper.vibeTags && whisper.vibeTags.length > 0 && (
             <div className="whisper-vibes">
-              {whisper.vibeTags.map(vibe => (
-                <span key={vibe} className="whisper-vibe-tag">{vibe}</span>
+              {whisper.vibeTags.map((vibe, index) => (
+                <span key={`${vibe}-${index}-${whisper._id}`} className="whisper-vibe-tag">{vibe}</span>
               ))}
             </div>
           )}
@@ -80,6 +97,12 @@ const WhisperCard = ({ whisper, onReply, isReply, parentWhisper }) => {
         >
           {hasReplied ? 'Replied' : 'Reply'}
         </button>
+        <button 
+          className="delete-button"
+          onClick={handleDelete}
+        >
+          Delete
+        </button>
         <div className="reply-count">
           {whisper.replyCount ? `${whisper.replyCount} ${whisper.replyCount === 1 ? 'reply' : 'replies'}` : 'No replies'}
         </div>
@@ -91,11 +114,12 @@ const WhisperCard = ({ whisper, onReply, isReply, parentWhisper }) => {
       
       {whisper.replies && whisper.replies.length > 0 && (
         <div className="whisper-replies">
-          {whisper.replies.map(reply => (
+          {whisper.replies.map((reply, index) => (
             <WhisperCard 
-              key={reply._id} 
+              key={reply._id || `reply-${index}-${whisper._id}`} 
               whisper={reply} 
               onReply={onReply}
+              onDelete={onDelete}
               isReply={true}
               parentWhisper={whisper}
             />

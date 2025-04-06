@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api/v1';
+// In production, we'll use the REACT_APP_API_URL environment variable
+// In development, we'll use localhost:5002
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5002/api/v1';
+
+console.log('API URL:', API_URL); // For debugging
 
 // Create axios instance with base URL
 const api = axios.create({
@@ -55,6 +59,31 @@ export const WhisperAPI = {
       console.error('Error replying to whisper:', error);
       throw error;
     }
+  },
+  
+  // Delete a whisper
+  deleteWhisper: async (whisperId) => {
+    try {
+      console.log(`Making DELETE request to: ${API_URL}/whispers/${whisperId}`);
+      const response = await api.delete(`/whispers/${whisperId}`);
+      console.log('Delete response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting whisper:', error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Response error data:', error.response.data);
+        console.error('Response status:', error.response.status);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('No response received:', error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Request setup error:', error.message);
+      }
+      throw error;
+    }
   }
 };
 
@@ -82,4 +111,8 @@ export const VibeAPI = {
   }
 };
 
-export default { WhisperAPI, VibeAPI }; 
+// Create a named export for the combined APIs
+const APIs = { WhisperAPI, VibeAPI };
+
+// Export the combined APIs as default
+export default APIs; 

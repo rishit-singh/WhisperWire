@@ -39,7 +39,7 @@ const Home = () => {
     };
 
     fetchData();
-  }, [selectedVibe]);
+  }, [selectedVibe, vibes.length]);
 
   // Handle create whisper
   const handleCreateWhisper = async (text, vibeTags) => {
@@ -80,6 +80,46 @@ const Home = () => {
     }
   };
 
+  // Handle delete whisper
+  const handleDeleteWhisper = async (whisperId) => {
+    try {
+      // Optimistic update - remove from UI immediately
+      const updatedWhispers = whispers.filter(w => w._id !== whisperId);
+      setWhispers(updatedWhispers);
+      
+      // Then delete from server
+      await WhisperAPI.deleteWhisper(whisperId);
+      
+      // Refresh whispers after deletion to ensure consistency
+      const refreshedWhispers = await WhisperAPI.getWhispers(selectedVibe);
+      setWhispers(refreshedWhispers);
+      
+      setError('');
+    } catch (err) {
+      console.error('Error deleting whisper:', err);
+      
+      let errorMessage = 'Failed to delete whisper. Please try again.';
+      
+      // Handle specific error cases
+      if (err.response && err.response.status === 404) {
+        errorMessage = 'Whisper not found. It may have already been deleted.';
+        // Since the whisper is already removed from UI and doesn't exist on server,
+        // no need to restore it
+      } else {
+        // For other errors, refresh to restore original state
+        try {
+          const refreshedWhispers = await WhisperAPI.getWhispers(selectedVibe);
+          setWhispers(refreshedWhispers);
+        } catch (refreshError) {
+          console.error('Error refreshing whispers:', refreshError);
+          errorMessage += ' Could not refresh whisper list.';
+        }
+      }
+      
+      setError(errorMessage);
+    }
+  };
+
   // Handle header button click
   const handleHeaderButtonClick = () => {
     setShowWhisperForm(true);
@@ -114,6 +154,7 @@ const Home = () => {
           <WhisperList 
             whispers={whispers} 
             onReply={handleReply} 
+            onDelete={handleDeleteWhisper}
             loading={loading}
           />
         </div>

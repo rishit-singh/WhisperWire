@@ -3,7 +3,7 @@ import WhisperCard from './WhisperCard';
 import { WhisperAPI } from '../../api';
 import './WhisperList.css';
 
-const WhisperList = ({ whispers, onReply, loading }) => {
+const WhisperList = ({ whispers, onReply, onDelete, loading }) => {
   const [processedWhispers, setProcessedWhispers] = useState([]);
 
   // Process whispers to handle any replies that might appear at the top level
@@ -57,11 +57,12 @@ const WhisperList = ({ whispers, onReply, loading }) => {
 
   return (
     <div className="whisper-list">
-      {processedWhispers.map(whisper => (
+      {processedWhispers.map((whisper, index) => (
         <WhisperCard 
-          key={whisper._id} 
+          key={whisper._id || `whisper-${index}`} 
           whisper={whisper} 
           onReply={onReply} 
+          onDelete={onDelete}
           isReply={whisper.isReply}
           parentWhisper={whisper.parentWhisper}
         />

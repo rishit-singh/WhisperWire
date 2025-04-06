@@ -1,0 +1,38 @@
+services:
+  # Backend API service
+  - type: web
+    name: whisperwire-api
+    env: node
+    plan: free
+    buildCommand: npm run install:backend
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5002
+      - key: FRONTEND_URL
+        fromService:
+          name: whisperwire-frontend
+          type: web
+          property: url
+      - key: MONGODB_URI
+        sync: false # This should be set manually in the Render dashboard
+
+  # Frontend web app
+  - type: web
+    name: whisperwire-frontend
+    env: static
+    buildCommand: npm run build
+    staticPublishPath: ./whisperwire-frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          name: whisperwire-api
+          type: web
+          property: url
+          append: /api/v1 
