@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const mongoose = require('mongoose');
 const Whisper = require('./models/Whisper');
 const Vibe = require('./models/Vibe');
 const { defaultVibes } = require('./seedData');
@@ -20,17 +21,23 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/whisperwire';
-mongoose.connect(MONGODB_URI, { 
-  useNewUrlParser: true, 
-  useUnifiedTopology: true 
+const uri = process.env.MONGODB_URI;
+
+mongoose.connect(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true
+  }
 })
 .then(() => {
   console.log('Connected to MongoDB');
   // Initialize default vibes if none exist
   initializeVibes();
 })
-.catch(err => console.error('MongoDB connection error:', err));
+.catch(err => {
+  console.error('MongoDB connection error:', err);
+});
 
 // Initialize default vibes if none exist
 const initializeVibes = async () => {

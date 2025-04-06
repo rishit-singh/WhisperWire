@@ -1,6 +1,9 @@
 require('dotenv').config();
+
 const express = require('express');
+
 const mongoose = require('mongoose');
+
 const cors = require('cors');
 const Whisper = require('./models/Whisper');
 const Vibe = require('./models/Vibe');
@@ -119,5 +122,19 @@ app.post('/api/v1/whispers/:id/reply', async (req, res) => {
   }
 });
 
-const PORT = 5001;
+// Simple DELETE endpoint for testing
+app.delete('/api/v1/whispers/:id', async (req, res) => {
+  try {
+    const whisper = await Whisper.findByIdAndDelete(req.params.id);
+    if (!whisper) {
+      return res.status(404).json({ error: 'Whisper not found' });
+    }
+    res.status(200).json({ message: 'Whisper deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting whisper:', error);
+    res.status(500).json({ error: 'Failed to delete whisper' });
+  }
+});
+
+const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`)); 
